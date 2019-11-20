@@ -115,15 +115,20 @@ public class RNGalleryManagerModule extends ReactContextBaseJavaModule {
             gallery = GalleryCursorManager.getAlbumCursor(reactContext);
             WritableArray albums = new WritableNativeArray();
             response.putInt("totalAlbums", gallery.getCount());
-            gallery.moveToFirst();
-            do {
-                WritableMap album = getAlbum(gallery);
-                albums.pushMap(album);
-            } while (gallery.moveToNext());
 
-            response.putArray("albums", albums);
-
-            promise.resolve(response);
+            if ( gallery.getCount() >= 1 ) {
+                gallery.moveToFirst();
+                do {
+                    WritableMap album = getAlbum(gallery);
+                    albums.pushMap(album);
+                } while (gallery.moveToNext());
+    
+                response.putArray("albums", albums);
+    
+                promise.resolve(response);
+            } else {
+                promise.reject( "no albums" );
+            }
 
         } catch (SecurityException ex) {
             System.err.println(ex);
